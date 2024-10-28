@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class ResetPasswordPage extends StatefulWidget {
+  const ResetPasswordPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<ResetPasswordPage> createState() => _ResetPasswordPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  bool _isPasswordVisible = false;
-
-  Future<bool> checkCredentials(String email, String password) async {
-    return email == 'ekokurniawaann@gmail.com' && password == 'secret';
-  }
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  bool _isNewPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -25,14 +22,13 @@ class _LoginPageState extends State<LoginPage> {
       body: SafeArea(
         child: GestureDetector(
           onTap: () {
-            // Menyembunyikan keyboard
             FocusScope.of(context).unfocus();
           },
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                const SizedBox(height: 80),
+                const SizedBox(height: 50),
                 Center(
                   child: Image.asset(
                     'assets/image.png',
@@ -42,11 +38,12 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 40),
                 Text(
-                  'Masuk',
+                  'Reset Sandi',
                   style: GoogleFonts.poppins(
-                    fontSize: 38,
+                    fontSize: 32,
                     fontWeight: FontWeight.w600,
                   ),
+                  textAlign: TextAlign.center,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(24),
@@ -55,9 +52,25 @@ class _LoginPageState extends State<LoginPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 50),
+                        const SizedBox(height: 45),
                         Text(
-                          'Masukan Email',
+                          'Pesan',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Masukkan kata sandi baru Anda.',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        const SizedBox(height: 60),
+                        Text(
+                          'Kata Sandi Baru',
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w400,
                             fontSize: 14,
@@ -65,9 +78,11 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 6),
                         TextFormField(
-                          controller: _emailController,
+                          controller: _newPasswordController,
+                          obscureText:
+                              !_isNewPasswordVisible, // Toggle visibility
                           decoration: InputDecoration(
-                            labelText: 'Email',
+                            labelText: 'Kata Sandi',
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: const BorderSide(
@@ -88,43 +103,44 @@ class _LoginPageState extends State<LoginPage> {
                               borderSide:
                                   const BorderSide(color: Colors.red, width: 1),
                             ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Email tidak boleh kosong';
-                            }
-                            if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-                              return 'Format email tidak valid';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 41),
-                        Text(
-                          'Masukan Password',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        TextFormField(
-                          controller: _passwordController,
-                          obscureText: !_isPasswordVisible,
-                          decoration: InputDecoration(
-                            labelText: 'Password',
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _isPasswordVisible
+                                _isNewPasswordVisible
                                     ? Icons.visibility
                                     : Icons.visibility_off,
                               ),
                               onPressed: () {
                                 setState(() {
-                                  _isPasswordVisible = !_isPasswordVisible;
+                                  _isNewPasswordVisible =
+                                      !_isNewPasswordVisible;
                                 });
                               },
                             ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Kata sandi tidak boleh kosong';
+                            }
+                            if (value.length < 6) {
+                              return 'Kata sandi minimal 6 karakter';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          'Konfirmasi Kata Sandi',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        TextFormField(
+                          controller: _confirmPasswordController,
+                          obscureText: !_isConfirmPasswordVisible,
+                          decoration: InputDecoration(
+                            labelText: 'Konfirmasi Kata Sandi',
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: const BorderSide(
@@ -145,73 +161,55 @@ class _LoginPageState extends State<LoginPage> {
                               borderSide:
                                   const BorderSide(color: Colors.red, width: 1),
                             ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isConfirmPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isConfirmPasswordVisible =
+                                      !_isConfirmPasswordVisible;
+                                });
+                              },
+                            ),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Password tidak boleh kosong';
+                              return 'Konfirmasi kata sandi tidak boleh kosong';
+                            }
+                            if (value != _newPasswordController.text) {
+                              return 'Kata sandi tidak cocok';
                             }
                             return null;
                           },
                         ),
-                        const SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Belum punya akun ?',
-                              style: GoogleFonts.roboto(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            Text(
-                              'Lupa password ?',
-                              style: GoogleFonts.roboto(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.blueAccent,
-                              ),
-                            )
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Daftar',
-                          style: GoogleFonts.roboto(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.blueAccent,
-                          ),
-                        ),
-                        const SizedBox(height: 98),
+                        const SizedBox(height: 96),
                         Center(
                           child: SizedBox(
                             width: 218,
                             height: 55,
                             child: ElevatedButton(
-                              onPressed: () async {
+                              onPressed: () {
                                 if (_formKey.currentState?.validate() ??
                                     false) {
-                                  String email = _emailController.text;
-                                  String password = _passwordController.text;
+                                  String newPassword =
+                                      _newPasswordController.text;
 
-                                  bool isValidUser =
-                                      await checkCredentials(email, password);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content:
+                                          Text('Kata sandi berhasil diubah!'),
+                                      duration: Duration(seconds: 2),
+                                    ),
+                                  );
 
-                                  if (isValidUser) {
-                                    Navigator.pushReplacementNamed(
-                                      context,
-                                      '/home',
-                                    );
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                            'Kredensial salah, silakan coba lagi.'),
-                                        duration: Duration(seconds: 2),
-                                      ),
-                                    );
-                                  }
+                                  Navigator.pushNamedAndRemoveUntil(
+                                    context,
+                                    '/login',
+                                    (Route<dynamic> route) => false,
+                                  );
                                 }
                               },
                               style: ElevatedButton.styleFrom(
@@ -221,7 +219,7 @@ class _LoginPageState extends State<LoginPage> {
                                 backgroundColor: Colors.blue,
                               ),
                               child: Text(
-                                'Masuk',
+                                'Reset',
                                 style: GoogleFonts.poppins(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w600,
